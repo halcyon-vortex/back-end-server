@@ -13,8 +13,14 @@ RUN mkdir -p /src && cp -a /tmp/node_modules /src/
 WORKDIR /src
 ADD . /src
 
+
 # Expose port
 EXPOSE  8080
 
+# Test
+
+
+
 # Run app using nodemon
-CMD ["nodemon", "/src/index.js"]
+CMD npm test && ["nodemon", "/src/index.js"]
+
