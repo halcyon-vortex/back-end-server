@@ -17,10 +17,7 @@ ADD . /src
 # Expose port
 EXPOSE  8080
 
-# Test
-
-
 
 # Run app using nodemon
-CMD npm test && ["nodemon", "/src/index.js"]
+CMD nodemon /src/index.js
 

@@ -15,6 +15,8 @@ describe("REST API Routes", function() {
 
   before(function() {
     //pre-populate test data
+    //this determines whether in a Docker container or running locally
+    //and instantiates redis accordingly
     if (process.env.REDIS_PORT_6379_TCP_ADDR) {
       var client = redis.createClient('6379', 'redis');
     } else {
@@ -42,7 +44,6 @@ describe("REST API Routes", function() {
   });
   after(function(done) {
     if (process.env.REDIS_PORT_6379_TCP_ADDR) {
-      console.log('IM IN THE CORRECT BLOCK')
       var client = redis.createClient('6379', 'redis');
     } else {
       var client = redis.createClient('6379');
