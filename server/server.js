@@ -7,7 +7,6 @@ var GithubStrategy = require('passport-github');
 var app = express();
 var api = require('./api/api');
 var apikeys = require('./config/apikeys.js');
-console.log('serverjs setup')
 
 var redis = require('redis');
 console.log("DOCKER ENVS: " + process.env.REDIS_PORT_6379_TCP_ADDR + ':' + process.env.REDIS_PORT_6379_TCP_PORT);
