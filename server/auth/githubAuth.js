@@ -7,10 +7,11 @@ exports.ensureAuth = function (req, res, next){
 
   if (req.isAuthenticated()) { return next(); }
   // if logged in continue loading page
-  res.send();
+  // res.send();
   // otherwise redirect to signin
   // redirect wasn't working here so we instead send nothing to the client
   // the client side checks if the res is empty and if it is redirects to signin
+  res.redirect('/auth/github/')
 };
 
 exports.signup = function (profileObj, callback){
