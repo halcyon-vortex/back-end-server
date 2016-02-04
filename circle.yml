@@ -1,3 +1,12 @@
+machine:
+  services:
+    - docker
 
+dependencies:
+  override:
+    - docker info
+    - docker build -t halcyon-vortex/back-end-server .
 
-- curl -v -X POST https://circleci.com/api/v1/project/halcyon-vortex/master/tree/master?circle-token=458f92e2b74c4f2094dabac732b5b59520cb38e0
+test:
+  override:
+    - docker run -it halcyon-vortex/back-end-server exec npm test
