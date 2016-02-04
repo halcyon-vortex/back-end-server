@@ -9,4 +9,5 @@ dependencies:
 
 test:
   override:
-    - docker run -it halcyon-vortex/back-end-server exec npm test
+    - docker run --name back-end-server halcyon-vortex/back-end-server
+    - sudo lxc-attach -n "$(docker inspect --format '{{.Id}}' back-end-server)" -- bash -c npm test
