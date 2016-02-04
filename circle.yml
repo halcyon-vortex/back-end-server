@@ -5,6 +5,7 @@ machine:
 dependencies:
   override:
     - docker info
+    - docker run -d --name redis -p 6379:6379 redis
     - docker build -t halcyon-vortex/back-end-server .
 
 test:
