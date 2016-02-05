@@ -1,0 +1,14 @@
+machine:
+  services:
+    - docker
+
+dependencies:
+  override:
+    - docker info
+    - docker run -d --name redis -p 6379:6379 redis
+    - docker build -t halcyon-vortex/back-end-server .
+
+test:
+  override:
+    - docker run --name back-end-server halcyon-vortex/back-end-server
+    - sudo lxc-attach -n "$(docker inspect --format '{{.Id}}' back-end-server)" -- bash -c npm test
