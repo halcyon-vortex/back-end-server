@@ -6,6 +6,7 @@ var session = require('express-session');
 var GithubStrategy = require('passport-github');
 var app = express();
 var api = require('./api/api');
+var dashboard = require('./dashboard/dashboard.js')
 var apikeys = require('./config/apikeys.js');
 
 var redis = require('redis');
@@ -25,6 +26,7 @@ require('./middleware/appMiddleware')(app);
 
 // setup the api
 app.use('/api/', api);
+app.use('/dashboard/', dashboard)
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({

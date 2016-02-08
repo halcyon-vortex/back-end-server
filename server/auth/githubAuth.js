@@ -11,7 +11,7 @@ exports.ensureAuth = function (req, res, next){
   // otherwise redirect to signin
   // redirect wasn't working here so we instead send nothing to the client
   // the client side checks if the res is empty and if it is redirects to signin
-  res.status(401)
+  res.send('gets to ensureAuth')
 };
 
 exports.signup = function (profileObj, callback){
