@@ -1,20 +1,24 @@
 var apikeys = require('../config/apikeys.js');
 
-exports.ensureAuth = function (req, res, next){
+exports.ensureAuth = function(req, res, next) {
   // isAuthenticated is provided function that checks if the user is logged in to google
-  console.log('gets to ensureAuth')
   // return next();
-
-  if (req.isAuthenticated()) { return next(); }
-  // if logged in continue loading page
-  // res.send();
-  // otherwise redirect to signin
-  // redirect wasn't working here so we instead send nothing to the client
-  // the client side checks if the res is empty and if it is redirects to signin
-  res.send('gets to ensureAuth')
+  console.log("REQ USER")
+  console.log(req.session);
+  if (req.isAuthenticated()) {
+    console.log('is authenticated')
+    return next();
+  } else {
+    // if logged in continue loading page
+    // res.send();
+    // otherwise redirect to signin
+    // redirect wasn't working here so we instead send nothing to the client
+    // the client side checks if the res is empty and if it is redirects to signin
+    res.redirect('/login')
+  }
 };
 
-exports.signup = function (profileObj, callback){
+exports.signup = function(profileObj, callback) {
   console.log(profileObj)
   var user;
   // // profileObj equals the userinfo that google sends upon signin
@@ -28,7 +32,7 @@ exports.signup = function (profileObj, callback){
   // // Email set as username to make sure each username is unique.
   // // Usernames are used to find to find specific user(s) in the database
   // // Suggested Improvement: Make this a token or id saved in the database for each user.
-  
+
   // user.picture = profileObj.profile._json.image.url;
 
   // // Other Attributes Google Provides that you may want to utilize
@@ -41,6 +45,7 @@ exports.signup = function (profileObj, callback){
   return callback(null, user);
 };
 
-exports.login = function (profileObj, callback){
-  return callback(null, profileObj);
+exports.login = function(profile, accessToken, refreshToken, callback) {
+  return callback(null, profile, accessToken, refreshToken);
+
 };
