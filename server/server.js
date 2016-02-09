@@ -1,15 +1,13 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
-var session = require('express-session');
-var passport = require('passport');
-var GithubStrategy = require('passport-github');
+var request = require('request');
 var app = express();
 var api = require('./api/api');
-var githubAuth = require('./auth/githubAuth')
-var dashboard = require('./dashboard/dashboard.js')
+var githubAuth = require('./auth/githubAuth');
+var dashboard = require('./dashboard/dashboard.js');
 var apikeys = require('./config/apikeys.js');
-var path = require('path')
+var path = require('path');
 
 var redis = require('redis');
 console.log("DOCKER ENVS: " + process.env.REDIS_PORT_6379_TCP_ADDR + ':' + process.env.REDIS_PORT_6379_TCP_PORT);
@@ -34,76 +32,48 @@ app.use(bodyParser.urlencoded({
   extended: true
 }));
 app.use(cookieParser());
-app.use(session({
-  secret: 'shhhhh this is a secret',
-  resave: true,
-  saveUninitialized: false
-}));
-app.use(passport.initialize());
-app.use(passport.session());
 
 // set up global error handling
 
 //OAuth
-passport.serializeUser(function(user, done) {
-  console.log('serialized')
-  done(null, user);
-});
-
-passport.deserializeUser(function(id, done) {
-  console.log('deserialized')
-  done(null, id);
-});
 
 app.get('/login', function(req, res) {
   res.sendFile(path.join(__dirname + '/../client/login.html'));
 })
 
-app.get('/auth/github',
-  passport.authenticate('github'));
+app.get('/auth/github', function(req, res) {
+  res.redirect('https://github.com/login/oauth/authorize?client_id=798b2a1a2446590d941c&redirect_uri=http://127.0.0.1:8080/auth/github/callback');
+})
 
 app.get('/auth/github/callback',
-  passport.authenticate('github', {
-    failureRedirect: '/'
-  }),
   function(req, res) {
-    // Successful authentication, redirect home.
-    res.redirect('/api/daily');
-    
-  });
-
-
-
-// When user logged in does a get req to auth/google/callback
-passport.use(new GithubStrategy({
-  clientID: apikeys.githubOauth.clientID,
-  clientSecret: apikeys.githubOauth.clientSecret,
-  // callbackURL: "https://fathomless-sands-7752.herokuapp.com/auth/google/callback"
-  callbackURL: "http://127.0.0.1:8080/auth/github/callback"
-}, function(accessToken, refreshToken, profile, done) {
-  githubAuth.login(profile,accessToken,refreshToken,
-    function(err, profile, accessToken, refreshToken) {
-      return done(err, profile);
+    var code = req.query['code'];
+    request({
+      url: 'https://github.com/login/oauth/access_token?client_id=798b2a1a2446590d941c&client_secret=c13f9bd2a58933bc4bfceb1ebac793be32525854&code=' + code,
+      method: "POST",
+      json: true,
+      headers: {
+        "Accept": "application/json",
+        "content-type": "application/json"
+      },
+      body: {}
+    }, function(err, response, body) {
+      // var response = {
+      //  Username : res.username,
+      //  Email : res.emails,
+      //  body : res.body
+      // };
+      console.log(res);
+      console.log(body);
+      res.send();
 
     });
 
-  // controllers.isUserInDb(profile.emails[0].value, function(inDb) {
-  //   // if the username/email is in the database run login
-  //   if (inDb) {
-  //     googleAuth.login({
-  //       profile: profile
-  //     }, function(err, profile) {
-  //       return done(err, profile);
-  //     });
-  //   } else {
-  //     googleAuth.signup({
-  //       profile: profile
-  //     }, function(err, profile) {
-  //       return done(err, profile);
-  //     })
-  //   }
-  // })
-}));
+
+    // Successful authentication, redirect home.
+  });
+
+
 
 // export the app for testing
 app.use(express.static(__dirname + '/../client'));
