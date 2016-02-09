@@ -1,7 +1,3 @@
-var oAuth = require ('../auth/githubAuth.js')
-//import auth
-
-
 module.exports = function(controller, router) {
 
   router.route('/')
