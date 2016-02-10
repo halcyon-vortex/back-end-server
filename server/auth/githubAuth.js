@@ -1,21 +1,7 @@
 var apikeys = require('../config/apikeys.js');
 
 exports.ensureAuth = function(req, res, next) {
-  // isAuthenticated is provided function that checks if the user is logged in to google
-  // return next();
-  console.log("REQ USER")
-  console.log(req.session);
-  if (req.isAuthenticated()) {
-    console.log('is authenticated')
-    return next();
-  } else {
-    // if logged in continue loading page
-    // res.send();
-    // otherwise redirect to signin
-    // redirect wasn't working here so we instead send nothing to the client
-    // the client side checks if the res is empty and if it is redirects to signin
     res.redirect('/login')
-  }
 };
 
 exports.signup = function(profileObj, callback) {
