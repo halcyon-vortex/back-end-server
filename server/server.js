@@ -1,6 +1,7 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
+var qs = require('qs')
 var request = require('request');
 var app = express();
 var api = require('./api/api');
@@ -10,7 +11,7 @@ var apikeys = require('./config/apikeys.js');
 var path = require('path');
 
 var redis = require('redis');
-console.log("DOCKER ENVS: " + process.env.REDIS_PORT_6379_TCP_ADDR + ':' + process.env.REDIS_PORT_6379_TCP_PORT);
+console.log("DOCKER ENVS: REDIS TCP ADDRESS/PORT" + process.env.REDIS_PORT_6379_TCP_ADDR + ':' + process.env.REDIS_PORT_6379_TCP_PORT);
 
 if (process.env.REDIS_PORT_6379_TCP_ADDR) {
   var client = redis.createClient('6379', 'redis');
@@ -42,14 +43,21 @@ app.get('/login', function(req, res) {
 })
 
 app.get('/auth/github', function(req, res) {
-  res.redirect('https://github.com/login/oauth/authorize?client_id=798b2a1a2446590d941c&redirect_uri=http://127.0.0.1:8080/auth/github/callback');
+  res.redirect('https://github.com/login/oauth/authorize?' + qs.stringify({
+    client_id: '798b2a1a2446590d941c',
+    redirect_uri: 'http://127.0.0.1:8080/auth/github/callback'
+  }));
 })
 
 app.get('/auth/github/callback',
   function(req, res) {
     var code = req.query['code'];
     request({
-      url: 'https://github.com/login/oauth/access_token?client_id=798b2a1a2446590d941c&client_secret=c13f9bd2a58933bc4bfceb1ebac793be32525854&code=' + code,
+      url: 'https://github.com/login/oauth/access_token?' + qs.stringify({
+        client_id: apikeys.githubOauth.clientID,
+        client_secret: apikeys.githubOauth.clientSecret,
+        code: code
+      }),
       method: "POST",
       json: true,
       headers: {
@@ -57,16 +65,11 @@ app.get('/auth/github/callback',
         "content-type": "application/json"
       },
       body: {}
-    }, function(err, response, body) {
-      // var response = {
-      //  Username : res.username,
-      //  Email : res.emails,
-      //  body : res.body
-      // };
-      console.log(res);
-      console.log(body);
-      res.send();
-
+    }, function(error, response, body) {
+      if (error) {
+        throw error;
+      }
+      res.send(body)
     });
 
 
